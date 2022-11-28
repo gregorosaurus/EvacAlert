@@ -1,0 +1,54 @@
+name: Build and deploy EvacAlert functions to dev
+
+env:
+  AZURE_FUNCTIONAPP_NAME: fn-evacalert-dev-cc
+  DOTNET_VERSION: '6.0.*' 
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'Development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v3
+        with:
+          ref: 'development'
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release Source/EvacAlert.sln
+
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app  Source/EvacAlert.sln
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE_DEV }}
+          package: ${{env.DOTNET_ROOT}}/app
