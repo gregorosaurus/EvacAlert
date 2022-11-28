@@ -21,10 +21,10 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
       
     steps:
-      - name: Checkout development branch
+      - name: Checkout main branch
         uses: actions/checkout@v3
         with:
-          ref: 'development'
+          ref: 'main'
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v2
