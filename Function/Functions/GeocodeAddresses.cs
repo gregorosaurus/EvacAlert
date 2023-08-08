@@ -55,15 +55,21 @@ namespace EvacAlert.Functions
                 return new BadRequestObjectResult(new { ErrorMessage = "Invalid content type." });
             }
 
-            List<Task<GeocodedData>> geocodeTasks = new List<Task<GeocodedData>>();
-            foreach (AddressData address in addresses)
-            {
-                //initiate the geocode, helps if we have a lot to encode. 
-                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Identifier, address.Group, address.Address));
-            }
-            await Task.WhenAll(geocodeTasks);
+            List<GeocodedData> results = new List<GeocodedData>();
 
-            return new OkObjectResult(geocodeTasks.Select(x=>x.Result).ToList());
+            await Parallel.ForEachAsync(addresses, new ParallelOptions()
+            {
+                MaxDegreeOfParallelism = 10
+            }, async (address, cancellationToken) =>
+            {
+                var geoCodedData = await _geocodingService.GeocodeAddressAsync(address.Identifier, address.Group, address.Address);
+                lock (results)
+                {
+                    results.Add(geoCodedData);
+                }
+            });
+
+            return new OkObjectResult(results);
 
         }
     }
