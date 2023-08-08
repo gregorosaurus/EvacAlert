@@ -27,7 +27,7 @@ The solution requires a ADLS (HFS enabled storage account) on Azure.  This stora
 
 The storage account has two containers: one called upload, one called reports. 
 
-Data must be uploaded to the path **/data/upload/addresses.csv**.  The ADF job is built to use this. 
+Data must be uploaded to the path **/data/upload/addresses.csv**.  
 
 ## Process Overview
 
@@ -40,7 +40,7 @@ The deployment works in two stages.
 ```
 ┌───────────────┐                      ┌───────────────┐                      ┌───────────────┐
 │               │                      │               │                      │               │
-│     ADLS      │                      │      ADF      │                      │  FunctionApp  │
+│     ADLS      │                      │      LA       │                      │  FunctionApp  │
 │               │                      │               │                      │               │
 └───────┬───────┘                      └───────┬───────┘                      └───────┬───────┘
         │                                      │                                      │        
@@ -66,7 +66,7 @@ The deployment works in two stages.
 ```
 ┌───────────────┐                      ┌───────────────┐                      ┌───────────────┐
 │               │                      │               │                      │               │
-│     ADLS      │                      │      ADF      │                      │  FunctionApp  │
+│     ADLS      │                      │      LA       │                      │  FunctionApp  │
 │               │                      │               │                      │               │
 └───────┬───────┘                      └───────┬───────┘                      └───────┬───────┘
         │                                      │                                      │        
@@ -108,3 +108,4 @@ az deployment group create --template-file ./deployment.bicep --resource-group '
 There are a few things we need to do post bicep deploment. 
 
 1. Set the AzureMapsApiKey app setting inside the function app of the azure maps account.  Note: this should be saved in a keyvault in production.
+2. Create two filesystems on the ADLS container: data, and reports.

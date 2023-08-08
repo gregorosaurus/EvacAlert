@@ -30,16 +30,6 @@ resource evacAlertADLSAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   }
 }
 
-resource dataFileSystem 'Microsoft.Storage/storageAccounts/fileSystems@2021-06-01' = {
-  parent: evacAlertADLSAccount
-  name: 'data'
-}
-
-resource reportsFileSystem 'Microsoft.Storage/storageAccounts/fileSystems@2021-06-01' = {
-  parent: evacAlertADLSAccount
-  name: 'reports'
-}
-
 @description('Used for hosting the function app data')
 resource evacAlertStorageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   name: 'st${companyident}evacalert${environment}${locationShortCode}'
@@ -72,7 +62,7 @@ resource evacAlertFunctionAppHostingPlan 'Microsoft.Web/serverfarms@2022-03-01' 
 
 
 @description('The main function app hosting API calls for ADF')
-resource notificationsFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
+resource evacAlertFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
   name: 'func-${companyident}-evacalert-${environment}-${locationShortCode}'
   location: location
   kind: 'functionapp'
@@ -112,29 +102,6 @@ resource notificationsFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 }
-
-
-@description('The main orchestration engine, Azure Data Factory, for evac alert')
-resource evacAlertDataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
-  name: 'adf-${companyident}-evacalert-${environment}-${locationShortCode}'
-  location: location
-  identity: {
-    type: 'SystemAssigned'
-  }
-}
-
-resource evacAlertADLSAccountADFLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
-  parent: evacAlertDataFactory
-  name: 'EvacAlertADLSLinkedService'
-  properties: {
-    type: 'AzureBlobFS'
-    typeProperties: {
-      accountKey: evacAlertStorageAccount.listKeys().keys[0].value
-      url: 'https://${evacAlertStorageAccount.name}.dfs.core.windows.net'
-    }
-  }
-}
-
 
 
 resource mapAccount 'Microsoft.Maps/accounts@2021-02-01' = {
