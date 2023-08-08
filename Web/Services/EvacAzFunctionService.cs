@@ -6,15 +6,25 @@ namespace EvacAlert.Explore.Services
 {
     public class EvacAzFunctionService : IEvacuationDataService
     {
+
+        public class Options
+        {
+            public string? EvacAlertFunctionEndpoint { get; set; }
+            public string? EvacAlertFunctionKey { get; set; }
+        }
+
+        private Options _options;
+
         private HttpClient _httpClient;
-        public EvacAzFunctionService(HttpClient httpClient)
+        public EvacAzFunctionService(HttpClient httpClient, Options options)
         {
             _httpClient = httpClient;
+            _options = options
         }
 
         public async Task<List<EvacuationArea>> GetEvacuationAreasAsync()
         {
-            HttpResponseMessage response = await _httpClient.GetAsync("https://fn-evacalert-dev-cc.azurewebsites.net/api/CurrentEvacZones?code=z4-PxpJOQ-TiEYivozDn_WnpIGtAdi5SS5t7iqUPNq7tAzFuqiswkA==");
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_options.EvacAlertFunctionEndpoint}/api/CurrentEvacZones?code={_options.EvacAlertFunctionKey}");
 
             if(response.StatusCode == System.Net.HttpStatusCode.OK)
             {

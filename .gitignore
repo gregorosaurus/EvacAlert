@@ -264,3 +264,5 @@ __pycache__/
 *.pyc
 /Tools/Reprocessor/appsettings.json
 .DS_Store
+/Web/appsettings.Development.json
+/Web/appsettings.json
