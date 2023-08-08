@@ -31,7 +31,7 @@ namespace EvacAlert.Functions
         {
             log.LogInformation("Geocoding addresses.");
 
-            List<Address> addresses;
+            List<AddressData> addresses;
             string reqContent = "";
             using (StreamReader sr = new StreamReader(req.Body))
             {
@@ -43,12 +43,12 @@ namespace EvacAlert.Functions
                 TextReader textReader = new StringReader(reqContent);
                 using (CsvReader csvReader = new CsvReader(textReader, CultureInfo.InvariantCulture))
                 {
-                    addresses = csvReader.GetRecords<Address>().ToList();
+                    addresses = csvReader.GetRecords<AddressData>().ToList();
                 }
             }
             else if (req.ContentType == "application/json")
             {
-                addresses = System.Text.Json.JsonSerializer.Deserialize<List<Address>>(reqContent);
+                addresses = System.Text.Json.JsonSerializer.Deserialize<List<AddressData>>(reqContent);
             }
             else
             {
@@ -56,10 +56,10 @@ namespace EvacAlert.Functions
             }
 
             List<Task<GeocodedData>> geocodeTasks = new List<Task<GeocodedData>>();
-            foreach (Address address in addresses)
+            foreach (AddressData address in addresses)
             {
                 //initiate the geocode, helps if we have a lot to encode. 
-                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Identifier, address.AddressQuery));
+                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Identifier, address.Address));
             }
             await Task.WhenAll(geocodeTasks);
 
