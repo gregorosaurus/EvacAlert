@@ -47,7 +47,7 @@ namespace EvacAlert.Services
             {
                 return new GeocodedData()
                 {
-                    Name = name,
+                    Identifier = name,
                     Coordinate = null
                 };
             }
@@ -56,7 +56,7 @@ namespace EvacAlert.Services
 
             return new GeocodedData()
             {
-                Name = name,
+                Identifier = name,
                 Coordinate = new Coordinate()
                 {
                     Longitude = point.Longitude,

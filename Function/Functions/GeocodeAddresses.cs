@@ -29,7 +29,7 @@ namespace EvacAlert.Functions
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("Geocoding addresses.");
 
             List<Address> addresses;
             string reqContent = "";
@@ -59,7 +59,7 @@ namespace EvacAlert.Functions
             foreach (Address address in addresses)
             {
                 //initiate the geocode, helps if we have a lot to encode. 
-                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Name, address.AddressQuery));
+                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Identifier, address.AddressQuery));
             }
             await Task.WhenAll(geocodeTasks);
 

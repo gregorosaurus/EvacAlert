@@ -72,7 +72,7 @@ namespace EvacAlert.Functions
                 {
                     evacuees.Add(new Evacuee()
                     {
-                        Name = geocodedPoint.Name,
+                        Identifier = geocodedPoint.Identifier,
                         Coordinate = geocodedPoint.Coordinate,
                         EvacAlertId = insideEvacArea.Id,
                         EvacAlertType = insideEvacArea.EventType,

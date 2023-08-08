@@ -27,7 +27,7 @@ The solution requires a ADLS (HFS enabled storage account) on Azure.  This stora
 
 The storage account has two containers: one called upload, one called reports. 
 
-Data must be uploaded to the path **/upload/addresses.csv**.  The ADF job is built to use this. 
+Data must be uploaded to the path **/data/upload/addresses.csv**.  The ADF job is built to use this. 
 
 ## Process Overview
 

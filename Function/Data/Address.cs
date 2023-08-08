@@ -3,7 +3,7 @@ namespace EvacAlert.Data
 {
     public class Address
     {
-        public string Name { get; set; }
+        public string Identifier { get; set; }
         public string Street { get; set; }
         public string City { get; set; }
         public string Province { get; set; }

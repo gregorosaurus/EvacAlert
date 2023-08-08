@@ -30,6 +30,16 @@ resource evacAlertADLSAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   }
 }
 
+resource dataFileSystem 'Microsoft.Storage/storageAccounts/fileSystems@2021-06-01' = {
+  parent: evacAlertADLSAccount
+  name: 'data'
+}
+
+resource reportsFileSystem 'Microsoft.Storage/storageAccounts/fileSystems@2021-06-01' = {
+  parent: evacAlertADLSAccount
+  name: 'reports'
+}
+
 @description('Used for hosting the function app data')
 resource evacAlertStorageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   name: 'st${companyident}evacalert${environment}${locationShortCode}'
@@ -117,9 +127,10 @@ resource evacAlertADLSAccountADFLinkedService 'Microsoft.DataFactory/factories/l
   parent: evacAlertDataFactory
   name: 'EvacAlertADLSLinkedService'
   properties: {
-    type: 'AzureBlobStorage'
+    type: 'AzureBlobFS'
     typeProperties: {
-      connectionString: 'DefaultEndpointsProtocol=https;AccountName=${evacAlertStorageAccount.name};AccountKey=${evacAlertStorageAccount.listKeys().keys[0].value}'
+      accountKey: evacAlertStorageAccount.listKeys().keys[0].value
+      url: 'https://${evacAlertStorageAccount.name}.dfs.core.windows.net'
     }
   }
 }
