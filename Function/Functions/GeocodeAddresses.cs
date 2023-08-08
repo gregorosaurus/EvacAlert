@@ -59,7 +59,7 @@ namespace EvacAlert.Functions
             foreach (AddressData address in addresses)
             {
                 //initiate the geocode, helps if we have a lot to encode. 
-                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Identifier, address.Address));
+                geocodeTasks.Add(_geocodingService.GeocodeAddressAsync(address.Identifier, address.Group, address.Address));
             }
             await Task.WhenAll(geocodeTasks);
 

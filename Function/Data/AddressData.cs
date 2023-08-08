@@ -4,6 +4,7 @@ namespace EvacAlert.Data
     public class AddressData
     {
         public string Identifier { get; set; }
+        public string Group { get; set; }
         public string Address { get; set; }
         /*public string Street { get; set; }
         public string City { get; set; }

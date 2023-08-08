@@ -27,7 +27,7 @@ namespace EvacAlert.Services
             _options = options;
         }
 
-        public async Task<GeocodedData> GeocodeAddressAsync(string name, string address)
+        public async Task<GeocodedData> GeocodeAddressAsync(string name, string group, string address)
         {
             string uri = $"https://atlas.microsoft.com/geocode?api-version=2022-02-01-preview&query={address}&subscription-key={_options.ApiKey}";
 
@@ -48,6 +48,7 @@ namespace EvacAlert.Services
                 return new GeocodedData()
                 {
                     Identifier = name,
+                    Group = group,
                     Coordinate = null
                 };
             }
@@ -57,6 +58,7 @@ namespace EvacAlert.Services
             return new GeocodedData()
             {
                 Identifier = name,
+                Group = group,
                 Coordinate = new Coordinate()
                 {
                     Longitude = point.Longitude,

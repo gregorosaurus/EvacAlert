@@ -11,7 +11,7 @@ namespace EvacAlert.Services
         /// </summary>
         /// <param name="address">the address to geocode</param>
         /// <returns>is null if nothing is found</returns>
-        public Task<GeocodedData> GeocodeAddressAsync(string name, string address);
+        public Task<GeocodedData> GeocodeAddressAsync(string name, string group, string address);
     }
 }
 
