@@ -1,0 +1,38 @@
+﻿.live-container {
+}
+
+#map-area {
+    background: black;
+}
+
+.fh {
+    height: calc(100vh - 3.5em - 6px) !important;
+}
+
+.evac-list {
+    overflow-y: scroll;
+    height: calc(100vh - 3.5em - 6px) !important;
+}
+
+.evac-alert-area {
+    margin-bottom: 8px;
+    padding:4px;
+}
+.evac-alert-area:hover {
+    cursor: pointer;
+    background: #eee;
+}
+
+.evac-alert-type {
+    font-weight: bold;
+    font-size: 0.7em;
+}
+
+.evac-alert-name {
+    font-size: 0.85em;
+}
+
+.evac-alert-agency {
+    color: #444;
+    font-size: 0.7em;
+}
