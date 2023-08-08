@@ -9,6 +9,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IEvacuationDataService, EvacAzFunctionService>();
+builder.Services.AddSingleton<EvacAzFunctionService.Options>(ctx =>
+{
+    return new EvacAzFunctionService.Options()
+    {
+        EvacAlertFunctionEndpoint = Environment.GetEnvironmentVariable("EvacAlertFunctionEndpoint"),
+        EvacAlertFunctionKey = Environment.GetEnvironmentVariable("EvacAlertFunctionKey")
+    };
+});
 
 var app = builder.Build();
 
