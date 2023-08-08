@@ -29,6 +29,17 @@ The storage account has two containers: one called upload, one called reports.
 
 Data must be uploaded to the path **/data/upload/addresses.csv**.  
 
+## Addresses File
+
+The addresses csv file format must have three columns:
+
+| Column | Description |
+|--------|-------------|
+| Identifier | The identifier of the address.  This could be the name of a person. |
+| Group | The group for this address, could be used for reporting on. |
+| Address | A single string address.  Note: this should be in quotes, as there may be commas in the address. |
+
+
 ## Process Overview
 
 The deployment works in two stages. 
