@@ -19,7 +19,7 @@ namespace EvacAlert.Explore.Services
         public EvacAzFunctionService(HttpClient httpClient, Options options)
         {
             _httpClient = httpClient;
-            _options = options
+            _options = options;
         }
 
         public async Task<List<EvacuationArea>> GetEvacuationAreasAsync()

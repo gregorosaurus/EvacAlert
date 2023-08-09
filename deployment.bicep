@@ -98,6 +98,18 @@ resource evacAlertFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
             name: 'AzureMapsApiKey'
             value: 'MANUALLY_ENTER_POST_DEPLOYMENT'
         }
+        {
+            name: 'DataLakeConnectionString'
+            value: 'DefaultEndpointsProtocol=https;AccountName=${evacAlertStorageAccount.name};EndpointSuffix=${az.environment().suffixes.storage};AccountKey=${evacAlertStorageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'OutputDataContainer'
+          value: 'data'
+        }
+        {
+          name: 'OutputDataPath'
+          value: 'generated/geocoded_addresses.json'
+        }
       ]
     }
   }
