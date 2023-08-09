@@ -105,6 +105,7 @@ namespace EvacAlert.Services
                         geocodedResults.Add(geocodedData);
                     }else
                     {
+                        _logger.LogWarning($"No valid address found for {geocodedAddress.Address}");
                         var geocodedData = new GeocodedData()
                         {
                             Identifier = geocodedAddress.Identifier,
