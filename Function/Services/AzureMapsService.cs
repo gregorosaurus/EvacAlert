@@ -87,7 +87,7 @@ namespace EvacAlert.Services
                 {
                     FeatureCollection item = geocodeResponse.BatchItems[i];
                     //find the input data.
-                    var firstFeature = item.Features?.FirstOrDefault();
+                    var firstFeature = item?.Features?.FirstOrDefault();
                     var point = (firstFeature.Geometry as Point)?.Coordinates;
 
                     if (geocodedAddress != null && point != null)
