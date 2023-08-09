@@ -55,9 +55,7 @@ namespace EvacAlert.Functions
                 return new BadRequestObjectResult(new { ErrorMessage = "Invalid content type." });
             }
 
-            List<GeocodedData> results = new List<GeocodedData>();
-
-            await _geocodingService.GeocodeAddressAsync(addresses);
+            List<GeocodedData> results = await _geocodingService.GeocodeAddressAsync(addresses);
 
             return new OkObjectResult(results);
 
