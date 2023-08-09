@@ -20,6 +20,16 @@ namespace EvacAlert
                 };
             });
 
+            builder.Services.AddSingleton<Functions.GeocodeAddresses.GeocodeStorageOptions>(ctx =>
+            {
+                return new Functions.GeocodeAddresses.GeocodeStorageOptions()
+                {
+                    ConnectionString = Environment.GetEnvironmentVariable("DataLakeConnectionString"),
+                    Container = Environment.GetEnvironmentVariable("OutputDataContainer") ?? "data",
+                    OutputFilePath = Environment.GetEnvironmentVariable("OutputDataPath")
+                };
+            });
+
             builder.Services.AddScoped<Services.IGeoCodingService, Services.AzureMapsService>();
 
             builder.Services.AddScoped<Services.IEvacuationService, Services.BCEvacuationAreaService>();
