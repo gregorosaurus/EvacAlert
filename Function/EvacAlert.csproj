@@ -20,6 +20,7 @@
     <None Remove="Microsoft.Azure.Functions.Extensions" />
     <None Remove="Microsoft.Extensions.Http" />
     <None Remove="GeoLibrary" />
+    <None Remove="Data\Maps\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
@@ -34,5 +35,6 @@
     <Folder Include="Data\" />
     <Folder Include="Functions\" />
     <Folder Include="Services\" />
+    <Folder Include="Data\Maps\" />
   </ItemGroup>
 </Project>

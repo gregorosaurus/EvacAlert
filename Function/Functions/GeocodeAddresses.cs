@@ -57,17 +57,7 @@ namespace EvacAlert.Functions
 
             List<GeocodedData> results = new List<GeocodedData>();
 
-            await Parallel.ForEachAsync(addresses, new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = 10
-            }, async (address, cancellationToken) =>
-            {
-                var geoCodedData = await _geocodingService.GeocodeAddressAsync(address.Identifier, address.Group, address.Address);
-                lock (results)
-                {
-                    results.Add(geoCodedData);
-                }
-            });
+            await _geocodingService.GeocodeAddressAsync(addresses);
 
             return new OkObjectResult(results);
 

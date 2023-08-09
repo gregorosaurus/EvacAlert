@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
@@ -7,6 +8,7 @@ using EvacAlert.Data;
 using GeoJSON.Text;
 using GeoJSON.Text.Feature;
 using GeoJSON.Text.Geometry;
+using Microsoft.Extensions.Logging;
 
 namespace EvacAlert.Services
 {
@@ -20,51 +22,87 @@ namespace EvacAlert.Services
         }
 
         private Options _options;
+        private ILogger<AzureMapsService> _logger;
 
-        public AzureMapsService(HttpClient httpClient, Options options)
+        public AzureMapsService(HttpClient httpClient, Options options, ILogger<AzureMapsService> logger)
         {
             _httpClient = httpClient;
             _options = options;
+            _logger = logger;
         }
 
-        public async Task<GeocodedData> GeocodeAddressAsync(string name, string group, string address)
+        public async Task<List<GeocodedData>> GeocodeAddressAsync(IEnumerable<AddressData> addressData)
         {
-            string uri = $"https://atlas.microsoft.com/geocode?api-version=2022-02-01-preview&query={address}&subscription-key={_options.ApiKey}";
+            List<GeocodedData> geocodedResults = new List<GeocodedData>();
 
-            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            List<AddressData> toGeoCode = new List<AddressData>(addressData);
+
+            int batchCount = 1;
+            while (toGeoCode.Count > 0)
+            {
+                _logger.LogInformation($"Running batch {batchCount}");
+                int itemCount = Math.Min(toGeoCode.Count, 100);
+                List<AddressData> batchGeoCodeData = toGeoCode.Take(itemCount).ToList();
+                toGeoCode.RemoveRange(0, itemCount);
+
+                geocodedResults.AddRange(await GeocodeAdddressBatchAsync(batchGeoCodeData));
+                batchCount++;
+            }
+
+            return geocodedResults;
+        }
+
+        private async Task<List<GeocodedData>> GeocodeAdddressBatchAsync(List<AddressData> batchGeoCodeData)
+        {
+            string uri = $"https://atlas.microsoft.com/geocode:batch?api-version=2022-02-01-preview&subscription-key={_options.ApiKey}";
+
+            List<GeocodedData> geocodedResults = new List<GeocodedData>();
+
+            Data.Maps.GeoCodingBatchRequest geoCodingRequest = new Data.Maps.GeoCodingBatchRequest()
+            {
+                BatchItems = batchGeoCodeData.Select(x => new Data.Maps.MapAddressRequest()
+                {
+                    Address = x.Address
+                }).ToList()
+            };
+
+            string jsonRequest = JsonSerializer.Serialize(geoCodingRequest);
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);
+            request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _httpClient.SendAsync(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception($"Invalid response returned from azure maps: {response.StatusCode}");
             }
 
             string returnJson = await response.Content.ReadAsStringAsync();
-
-            FeatureCollection featureCollection = JsonSerializer.Deserialize<FeatureCollection>(returnJson);
-
-            Feature firstFeature = featureCollection.Features.FirstOrDefault();
-
-            if (firstFeature == null)
+            Data.Maps.GeoCodingBatchResponse geocodeResponse = JsonSerializer.Deserialize<Data.Maps.GeoCodingBatchResponse>(returnJson);
+            for(int i=0;i<geocodeResponse.BatchItems.Count;i++)
             {
-                return new GeocodedData()
+                FeatureCollection item = geocodeResponse.BatchItems[i];
+                AddressData geocodedAddress = batchGeoCodeData[i];
+                //find the input data.
+                var firstFeature = item.Features?.FirstOrDefault();
+                var point = (firstFeature.Geometry as Point)?.Coordinates;
+                
+                if (geocodedAddress != null && point != null)
                 {
-                    Identifier = name,
-                    Group = group,
-                    Coordinate = null
-                };
+                    var geocodedData = new GeocodedData()
+                    {
+                        Identifier = geocodedAddress.Identifier,
+                        Group = geocodedAddress.Group,
+                        Coordinate = new Coordinate()
+                        {
+                            Latitude = point.Latitude,
+                            Longitude = point.Longitude
+                        }
+                    };
+                    geocodedResults.Add(geocodedData);
+                }
             }
 
-            var point = (firstFeature.Geometry as Point)?.Coordinates;
-
-            return new GeocodedData()
-            {
-                Identifier = name,
-                Group = group,
-                Coordinate = new Coordinate()
-                {
-                    Longitude = point.Longitude,
-                    Latitude = point.Latitude
-                }
-            };
+            return geocodedResults;
         }
     }
 }
