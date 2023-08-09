@@ -71,7 +71,7 @@ namespace EvacAlert.Services
             request.Content = new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _httpClient.SendAsync(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.OK && response.StatusCode != System.Net.HttpStatusCode.PartialContent)
             {
                 throw new Exception($"Invalid response returned from azure maps: {response.StatusCode}");
             }
