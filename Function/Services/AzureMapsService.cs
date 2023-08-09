@@ -80,25 +80,48 @@ namespace EvacAlert.Services
             Data.Maps.GeoCodingBatchResponse geocodeResponse = JsonSerializer.Deserialize<Data.Maps.GeoCodingBatchResponse>(returnJson);
             for(int i=0;i<geocodeResponse.BatchItems.Count;i++)
             {
-                FeatureCollection item = geocodeResponse.BatchItems[i];
                 AddressData geocodedAddress = batchGeoCodeData[i];
-                //find the input data.
-                var firstFeature = item.Features?.FirstOrDefault();
-                var point = (firstFeature.Geometry as Point)?.Coordinates;
                 
-                if (geocodedAddress != null && point != null)
+                    
+                try
                 {
+                    FeatureCollection item = geocodeResponse.BatchItems[i];
+                    //find the input data.
+                    var firstFeature = item.Features?.FirstOrDefault();
+                    var point = (firstFeature.Geometry as Point)?.Coordinates;
+
+                    if (geocodedAddress != null && point != null)
+                    {
+                        var geocodedData = new GeocodedData()
+                        {
+                            Identifier = geocodedAddress.Identifier,
+                            Group = geocodedAddress.Group,
+                            Coordinate = new Coordinate()
+                            {
+                                Latitude = point.Latitude,
+                                Longitude = point.Longitude
+                            }
+                        };
+                        geocodedResults.Add(geocodedData);
+                    }else
+                    {
+                        var geocodedData = new GeocodedData()
+                        {
+                            Identifier = geocodedAddress.Identifier,
+                            Group = geocodedAddress.Group,
+                            Coordinate = null
+                        };
+                    }
+                }
+                catch(Exception e)
+                {
+                    _logger.LogError($"Exception occurred retrieving a geocoded address: {e.Message} {e.StackTrace}.");
                     var geocodedData = new GeocodedData()
                     {
                         Identifier = geocodedAddress.Identifier,
                         Group = geocodedAddress.Group,
-                        Coordinate = new Coordinate()
-                        {
-                            Latitude = point.Latitude,
-                            Longitude = point.Longitude
-                        }
+                        Coordinate = null
                     };
-                    geocodedResults.Add(geocodedData);
                 }
             }
 
