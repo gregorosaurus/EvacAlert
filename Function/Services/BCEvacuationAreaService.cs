@@ -53,6 +53,10 @@ namespace EvacAlert.Services
                 {
                     evacArea.EventType = eventType.ToString();
                 }
+                if (evacFeature.Properties.TryGetValue("ORDER_ALERT_STATUS", out object orderStatus))
+                {
+                    evacArea.OrderStatus = orderStatus.ToString();
+                }
                 if (evacFeature.Properties.TryGetValue("ISSUING_AGENCY", out object issuingAgency))
                 {
                     evacArea.IssuingAgency = issuingAgency.ToString();

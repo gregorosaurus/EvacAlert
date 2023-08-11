@@ -45,6 +45,7 @@ namespace EvacAlert.Functions
            [BlobTrigger("data/upload/addresses.csv", Connection = "DataLakeConnectionString")] Stream blobStream,
            ILogger log)
         {
+
             log.LogInformation("Geocoding addresses from storage.");
 
             DataLakeServiceClient client = new DataLakeServiceClient(_geocodeStorageOptions.ConnectionString);

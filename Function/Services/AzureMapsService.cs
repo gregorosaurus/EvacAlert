@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using EvacAlert.Data;
 using GeoJSON.Text;
@@ -65,6 +66,7 @@ namespace EvacAlert.Services
                     Address = x.Address
                 }).ToList()
             };
+            geoCodingRequest.BatchItems.ForEach(x => x.Address = Regex.Replace(x.Address, @"\b(?:PO\s*BOX|P\.?\s*O\.?\s*BOX|BOX)\s*\d+\b", "").Trim());
 
             string jsonRequest = JsonSerializer.Serialize(geoCodingRequest);
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, uri);

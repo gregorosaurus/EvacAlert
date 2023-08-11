@@ -10,7 +10,10 @@ namespace EvacAlert
         {
             using (System.Security.Cryptography.SHA1 sha1 = System.Security.Cryptography.SHA1.Create())
             {
-                var hash = sha1.ComputeHash(Convert.FromBase64String(input));
+                if (string.IsNullOrEmpty(input))
+                    return "";
+
+                var hash = sha1.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
                 var sb = new StringBuilder(hash.Length * 2);
 
                 foreach (byte b in hash)
