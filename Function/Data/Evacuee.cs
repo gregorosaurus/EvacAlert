@@ -9,6 +9,7 @@ namespace EvacAlert.Data
         public string EvacAlertId { get; set; }
         public string EvacAlertName { get; set; }
         public string EvacAlertType { get; set; }
+        public string EvacAlertOrderStatus { get; set; }
     }
 }
 

@@ -78,6 +78,7 @@ namespace EvacAlert.Functions
                         EvacAlertId = insideEvacArea.Id,
                         EvacAlertType = insideEvacArea.EventType,
                         EvacAlertName = insideEvacArea.Name,
+                        EvacAlertOrderStatus = insideEvacArea.OrderStatus
                     });
                 }
             }
