@@ -89,15 +89,23 @@ namespace EvacAlert.Functions
                 if (address != null)
                 {  //should always be the case
                     existingGeoCodeData[geocodedAddress.Identifier].AddressHash = Crypto.GenerateHash(address.Address);
-                }
+                    }
             }
 
             using (Stream outputStream = await outputFile.OpenWriteAsync(overwrite: true))
             using (TextWriter tw = new StreamWriter(outputStream))
             {
-                //write all geocoded addresses back to blob
-                var json = System.Text.Json.JsonSerializer.Serialize(existingGeoCodeData.Select(x=>x.Value).ToList());
-                await tw.WriteAsync(json);
+                try
+                {
+                    //write all geocoded addresses back to blob
+                    var json = System.Text.Json.JsonSerializer.Serialize(existingGeoCodeData.Select(x => x.Value).ToList());
+                    await tw.WriteAsync(json);
+                }
+                catch(Exception e)
+                {
+                    _logger.LogError($"Could not save geocoded addresses: {e.Message} {e.StackTrace}");
+                    throw; 
+                }
             }
 
         }
