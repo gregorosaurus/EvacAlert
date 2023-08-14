@@ -113,6 +113,9 @@ namespace EvacAlert.Functions
             using (StreamReader sr = new StreamReader(geocodedStream))
             {
                 string existingGeoCodedJson = await sr.ReadToEndAsync();
+                if (string.IsNullOrEmpty(existingGeoCodedJson))
+                    return new Dictionary<string, GeocodedData>(); //no data
+
                 existingGeocodedData = System.Text.Json.JsonSerializer.Deserialize<List<GeocodedData>>(existingGeoCodedJson, new System.Text.Json.JsonSerializerOptions()
                 {
                     PropertyNameCaseInsensitive = true
