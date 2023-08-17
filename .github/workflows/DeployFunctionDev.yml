@@ -1,7 +1,7 @@
 name: Build and deploy EvacAlert functions to dev
 
 env:
-  AZURE_FUNCTIONAPP_NAME: fn-evacalert-dev-cc
+  AZURE_FUNCTIONAPP_NAME: func-gm-evacalert-test-cc
   DOTNET_VERSION: '6.0.*' 
 
 on:
