@@ -42,7 +42,8 @@ namespace EvacAlert.Functions
 
         [FunctionName("GeocodeAddressesStorage")]
         public async Task GeocodeAddressesStorageRequest(
-           [BlobTrigger("data/upload/addresses.csv", Connection = "DataLakeConnectionString")] Stream blobStream,
+           [BlobTrigger("data/upload/{name}.csv", Connection = "DataLakeConnectionString")] Stream blobStream,
+           string name,
            ILogger log)
         {
 
@@ -50,8 +51,11 @@ namespace EvacAlert.Functions
 
             DataLakeServiceClient client = new DataLakeServiceClient(_geocodeStorageOptions.ConnectionString);
             DataLakeFileSystemClient fileSystem = client.GetFileSystemClient(_geocodeStorageOptions.Container);
-            DataLakeDirectoryClient generatedDirectory = fileSystem.GetDirectoryClient(Path.GetDirectoryName(_geocodeStorageOptions.OutputFilePath));
-            DataLakeFileClient outputFile = generatedDirectory.GetFileClient(Path.GetFileName(_geocodeStorageOptions.OutputFilePath));
+            DataLakeDirectoryClient generatedDirectory = fileSystem.GetDirectoryClient(_geocodeStorageOptions.OutputFilePath);
+
+            //backwards compatibility
+            string filename = $"geocoded_{name}.json";
+            DataLakeFileClient outputFile = generatedDirectory.GetFileClient(filename);
 
 
             List<AddressData> addresses;

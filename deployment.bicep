@@ -108,7 +108,7 @@ resource evacAlertFunctionApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'OutputDataPath'
-          value: 'generated/geocoded_addresses.json'
+          value: 'generated'
         }
       ]
     }
