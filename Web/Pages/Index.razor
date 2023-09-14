@@ -3,27 +3,10 @@
 @inject IConfiguration _configuration;
 @implements IDisposable;
 @inject IEvacuationDataService _evacDataSvc;
+@inject IStaticLocationInformationService _staticInfoSvc;
 
+<div class="fh" id="map-area"></div>
 
-<div class="live-container container-fluid">
-    <div class="row">
-        <div class="col-2 evac-list">
-            <h3>Current Evacuation Alerts</h3>
-            @foreach(Data.EvacuationArea evacArea in _evacAreas)
-            {
-                <div class="evac-alert-area">
-                    <div class="evac-alert-agency">@evacArea.IssuingAgency</div>
-                    <div class="evac-alert-type">@evacArea.EventType</div>
-
-                    <div class="evac-alert-name">@evacArea.Name</div>
-
-                </div>
-            }
-        </div>
-        <div class="col-10 fh" id="map-area">
-        </div>
-    </div>
-</div>
 
 @code {
     private IJSObjectReference? _evacModule;
@@ -40,6 +23,13 @@
 
             _evacAreas = await _evacDataSvc.GetEvacuationAreasAsync();
             await _evacModule!.InvokeVoidAsync("renderEvacAreas", _evacAreas);
+
+            var regions = await _staticInfoSvc.GetRegionsAsync();
+            await _evacModule!.InvokeVoidAsync("renderRegions", regions);
+
+            var facilities = await _staticInfoSvc.GetFacilitiesAsync();
+            await _evacModule!.InvokeVoidAsync("drawFacilities", facilities);
+
             StateHasChanged();
         }
     }

@@ -13,10 +13,19 @@ builder.Services.AddSingleton<EvacAzFunctionService.Options>(ctx =>
 {
     return new EvacAzFunctionService.Options()
     {
-        EvacAlertFunctionEndpoint = Environment.GetEnvironmentVariable("EvacAlertFunctionEndpoint"),
-        EvacAlertFunctionKey = Environment.GetEnvironmentVariable("EvacAlertFunctionKey")
+        EvacAlertFunctionEndpoint = ctx.GetRequiredService<IConfiguration>().GetValue<string>("EvacAlertFunctionEndpoint"),
+        EvacAlertFunctionKey = ctx.GetRequiredService<IConfiguration>().GetValue<string>("EvacAlertFunctionKey")
     };
 });
+builder.Services.AddSingleton<StaticBlobStorageInformationService.Options>(ctx =>
+{
+    return new StaticBlobStorageInformationService.Options()
+    {
+        FacilitiesCSVUrl = ctx.GetRequiredService<IConfiguration>().GetValue<string>("FacilitiesCsvUrl"),
+        RegionsGeoJsonUrl = ctx.GetRequiredService<IConfiguration>().GetValue<string>("RegionsGeoJsonUrl")
+    };
+});
+builder.Services.AddScoped<IStaticLocationInformationService, StaticBlobStorageInformationService>();
 
 var app = builder.Build();
 

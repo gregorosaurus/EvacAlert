@@ -9,15 +9,21 @@
   <ItemGroup>
     <None Remove="Data\" />
     <None Remove="Services\" />
+    <None Remove="BuiltIn\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\js\modules\" />
     <Folder Include="Services\" />
+    <Folder Include="BuiltIn\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\js\" />
     <Content Remove="wwwroot\js\modules\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="GeoJSON.Net" Version="1.2.19" />
   </ItemGroup>
 </Project>
