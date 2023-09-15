@@ -16,7 +16,7 @@ export function initMap(subscriptionKey) {
 
 export function drawFacilities(facilities) {
     var dataSource = new atlas.source.DataSource();
-    map.sources.add(dataSource);
+    _map.sources.add(dataSource);
     facilities.forEach(function (facility) {
         var point = new atlas.Shape(new atlas.data.Point([facility.longitude, facility.latitude]));
         //Add the symbol to the data source.
@@ -25,7 +25,7 @@ export function drawFacilities(facilities) {
     
 
     //Create a symbol layer using the data source and add it to the map
-    map.layers.add(new atlas.layer.SymbolLayer(dataSource, null));
+    _map.layers.add(new atlas.layer.SymbolLayer(dataSource, null));
 }
 
 export function renderRegions(regions) {
