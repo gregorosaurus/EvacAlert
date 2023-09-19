@@ -47,7 +47,12 @@ export function drawFacilities(facilities) {
             textField: ['concat', ['to-string', ['get', 'name']], 'test'],
 
             //Offset the text so that it appears on top of the icon.
-            offset: [0, 1]
+            offset: [0, 1],
+
+            haloBlue: 0.8,
+            haloWidth:0.75,
+            haloColor: '#000000',
+            color: '#FFFFFF'
         }
     }));
 }
