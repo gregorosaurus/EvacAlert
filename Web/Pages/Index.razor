@@ -1,14 +1,39 @@
 ﻿@page "/"
+@using System.Reflection;
 @inject IJSRuntime JS;
 @inject IConfiguration _configuration;
 @implements IDisposable;
 @inject IEvacuationDataService _evacDataSvc;
 @inject IStaticLocationInformationService _staticInfoSvc;
+@using GeoLibrary.Model;
 
 <div class="fh" id="map-area"></div>
 
+@if (_selectedEvacArea != null)
+{
+    <div class="evac-area-info">
+        <div class="evac-area-info-id">@_selectedEvacArea.Id</div>
+        <table class="table">
+            @foreach (PropertyInfo property in typeof(Data.EvacuationArea).GetProperties())
+            {
+                if (property.Name == "BoundingAreas" || property.Name == "Id")
+                {
+                    continue;
+                }
+                <tr>
+                    <td>@property.Name</td>
+                    <td>@property.GetValue(_selectedEvacArea!)?.ToString()</td>
+                </tr>
+            }
+        </table>
+        <button class="btn btn-sm btn-primary" @onclick="()=>_selectedEvacArea = null">Close</button>
+    </div>
+}
 
 @code {
+
+    private Data.EvacuationArea? _selectedEvacArea = null;
+
     private IJSObjectReference? _evacModule;
 
     private List<Data.EvacuationArea> _evacAreas = new List<Data.EvacuationArea>();
@@ -19,7 +44,7 @@
         {
             _evacModule = await JS.InvokeAsync<IJSObjectReference>("import", "./js/modules/evac.js");
 
-            await _evacModule!.InvokeVoidAsync("initMap", _configuration.GetValue<string>("AzureMapsKey"));
+            await _evacModule!.InvokeVoidAsync("initMap", _configuration.GetValue<string>("AzureMapsKey"), DotNetObjectReference.Create(this));
 
             _evacAreas = await _evacDataSvc.GetEvacuationAreasAsync();
             await _evacModule!.InvokeVoidAsync("renderEvacAreas", _evacAreas);
@@ -34,8 +59,38 @@
         }
     }
 
+    [JSInvokable]
+    public void MapWasClicked(double[] coordinates)
+    {
+        //find the evac zone we clicked.  Just do the first one.
+        Point point = new Point(coordinates[0], coordinates[1]);
+        Data.EvacuationArea insideEvacArea = null; //not null if within.
+        foreach (Data.EvacuationArea evacArea in this._evacAreas)
+        {
+            foreach (Data.BoundingArea boundingArea in evacArea.BoundingAreas)
+            {
+                Polygon boundingAreaPolygon = new Polygon(boundingArea.Coordinates.Select(c => new Point(c.Longitude, c.Latitude)));
+                if (boundingAreaPolygon.IsPointInside(point))
+                {
+                    insideEvacArea = evacArea;
+                }
+            }
+        }
+
+        if (insideEvacArea != null)
+        {
+            _selectedEvacArea = insideEvacArea;
+        }
+        else
+        {
+            _selectedEvacArea = null;
+        }
+
+        StateHasChanged();
+    }
+
     public void Dispose()
     {
-        
+
     }
 }

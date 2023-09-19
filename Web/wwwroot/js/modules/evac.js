@@ -1,7 +1,7 @@
 ﻿
 var _map, _evacOrdersDataSource, _evacAlertsDataSource;
 
-export function initMap(subscriptionKey) {
+export function initMap(subscriptionKey, dotnetRef) {
     _map = new atlas.Map('map-area', {
         center: [-121.55324378270137, 50.896621841510914,],
         //style: 'grayscale_dark',
@@ -11,6 +11,20 @@ export function initMap(subscriptionKey) {
             authType: 'subscriptionKey',
             subscriptionKey: subscriptionKey
         }
+    });
+
+    _map.events.add('click', (e) => {
+        // Get the click position
+        const clickPosition = e.position;
+
+        // You can perform global map click actions here
+        // For example, displaying information or performing other tasks
+        console.log('Map Clicked at:', clickPosition);
+
+        dotnetRef.invokeMethodAsync('MapWasClicked', e.position)
+        .then(data => {
+            console.log(data);
+        });
     });
 }
 
