@@ -36,3 +36,22 @@
     color: #444;
     font-size: 0.7em;
 }
+
+.evac-area-info {
+    top: 60px;
+    left: 0;
+    position: fixed;
+    font-size: 0.8em;
+    padding: 10px;
+    border-radius: 7pt;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    background:white;
+}
+.evac-area-info tr td:first-child {
+    font-weight:bold;
+}
+.evac-area-info-id {
+    font-size:1.3em;
+    font-weight:bold;
+    margin-bottom:10px;
+}
