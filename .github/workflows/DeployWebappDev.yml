@@ -1,0 +1,54 @@
+name: Build and deploy evac alert web app to test
+
+env:
+  AZURE_WEBAPP_EVACALERT: wa-gm-evacalert-web-test-cc
+  AZURE_WEBAPP_DOTNET_VERSION: '6.0.*' 
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_deploy-evacalert-web:
+    runs-on: ubuntu-latest
+    environment:
+      name: 'Development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      
+    steps:
+      - name: Checkout Main branch
+        uses: actions/checkout@v3
+        with:
+          ref: 'main'
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.AZURE_WEBAPP_DOTNET_VERSION }}
+      
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Build with dotnet
+        run: dotnet build --configuration Release Web/EvacAlert.Explore.sln
+
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/app  Web/EvacAlert.Explore.sln
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_EVACALERT }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_EVACALERT_WEB_PUBLISH_PROFILE_DEV }}
+          package: ${{env.DOTNET_ROOT}}/app
