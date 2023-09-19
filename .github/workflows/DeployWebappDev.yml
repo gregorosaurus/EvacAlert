@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  Build and Deploy Web App:
+  Build-and-Deploy-Web-App:
     runs-on: ubuntu-latest
     environment:
       name: 'Test'
