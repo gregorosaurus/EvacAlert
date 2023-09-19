@@ -32,14 +32,24 @@ export function drawFacilities(facilities) {
     var dataSource = new atlas.source.DataSource();
     _map.sources.add(dataSource);
     facilities.forEach(function (facility) {
-        var point = new atlas.Shape(new atlas.data.Point([facility.longitude, facility.latitude]));
+        var point = new atlas.Shape(new atlas.data.Feature(new atlas.data.Point([facility.longitude, facility.latitude]), {
+            name: facility.facilityName
+        }));
         //Add the symbol to the data source.
-        dataSource.add([point]);
+        dataSource.add(point);
     });
     
 
     //Create a symbol layer using the data source and add it to the map
-    _map.layers.add(new atlas.layer.SymbolLayer(dataSource, null));
+    _map.layers.add(new atlas.layer.SymbolLayer(dataSource, null, {
+        textOptions: {
+            //Convert the temperature property of each feature into a string and concatenate "°F".
+            textField: ['concat', ['to-string', ['get', 'name']], 'test'],
+
+            //Offset the text so that it appears on top of the icon.
+            offset: [0, 1]
+        }
+    }));
 }
 
 export function renderRegions(regions) {
