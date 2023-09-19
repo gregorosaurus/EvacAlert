@@ -14,10 +14,10 @@ permissions:
   contents: read
 
 jobs:
-  build_and_deploy-evacalert-web:
+  Build and Deploy Web App:
     runs-on: ubuntu-latest
     environment:
-      name: 'Development'
+      name: 'Test'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
       
     steps:
