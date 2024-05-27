@@ -10,6 +10,12 @@ namespace EvacAlert.Data
         public string EvacAlertName { get; set; }
         public string EvacAlertType { get; set; }
         public string EvacAlertOrderStatus { get; set; }
+
+        /// <summary>
+        /// The UTC timestamp that this evacuee status was determined.
+        /// This is useful for determining state changes if required. 
+        /// </summary>
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }
 }
 
