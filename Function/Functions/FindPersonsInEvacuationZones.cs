@@ -12,6 +12,7 @@ using EvacAlert.Data;
 using System.Collections.Generic;
 using GeoLibrary.Model;
 using System.Linq;
+using Microsoft.Extensions.Primitives;
 
 namespace EvacAlert.Functions
 {
@@ -39,6 +40,16 @@ namespace EvacAlert.Functions
                 requestContent = await sr.ReadToEndAsync();
             }
 
+            //should we filter the non-evac'd people out?
+            bool outputAllEvacs = true; //true by default
+            if (req.Query.TryGetValue("includeAll", out StringValues queryValue))
+            {
+                if (bool.TryParse(queryValue.FirstOrDefault() ?? "true", out bool parsedResult))
+                {
+                    outputAllEvacs = parsedResult;
+                }
+            }
+
             //first thing, load the evac areas. 
 
             List<GeocodedData> geocodedPoints = JsonSerializer.Deserialize<List<GeocodedData>>(requestContent, new JsonSerializerOptions() {
@@ -58,7 +69,7 @@ namespace EvacAlert.Functions
                 EvacuationArea insideEvacArea = null; //not null if within.
                 foreach (EvacuationArea evacArea in activeEvacZones)
                 {
-                    foreach(BoundingArea boundingArea in evacArea.BoundingAreas)
+                    foreach (BoundingArea boundingArea in evacArea.BoundingAreas)
                     {
                         Polygon boundingAreaPolygon = new Polygon(boundingArea.Coordinates.Select(c => new Point(c.Longitude, c.Latitude)));
                         if (boundingAreaPolygon.IsPointInside(point))
@@ -68,7 +79,7 @@ namespace EvacAlert.Functions
                     }
                 }
 
-                if(insideEvacArea != null)
+                if (insideEvacArea != null)
                 {
                     evacuees.Add(new Evacuee()
                     {
@@ -79,6 +90,20 @@ namespace EvacAlert.Functions
                         EvacAlertType = insideEvacArea.EventType,
                         EvacAlertName = insideEvacArea.Name,
                         EvacAlertOrderStatus = insideEvacArea.OrderStatus
+                    });
+                }
+                else if (outputAllEvacs)
+                {
+                    //if not in an inside evac area AND we don't want to filter the non-evac'd people. 
+                    evacuees.Add(new Evacuee()
+                    {
+                        Identifier = geocodedPoint.Identifier,
+                        Group = geocodedPoint.Group,
+                        Coordinate = geocodedPoint.Coordinate,
+                        EvacAlertId = null,
+                        EvacAlertType = null,
+                        EvacAlertName = null,
+                        EvacAlertOrderStatus = null
                     });
                 }
             }

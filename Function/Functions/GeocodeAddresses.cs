@@ -81,7 +81,7 @@ namespace EvacAlert.Functions
             _logger.LogInformation($"geocoded in {results.Count} addresses");
 
             //merge the results.
-            foreach(GeocodedData geocodedAddress in results)
+            foreach (GeocodedData geocodedAddress in results)
             {
                 if (existingGeoCodeData.ContainsKey(geocodedAddress.Identifier))
                     existingGeoCodeData[geocodedAddress.Identifier] = geocodedAddress;
@@ -93,7 +93,7 @@ namespace EvacAlert.Functions
                 if (address != null)
                 {  //should always be the case
                     existingGeoCodeData[geocodedAddress.Identifier].AddressHash = Crypto.GenerateHash(address.Address);
-                    }
+                }
             }
 
             using (Stream outputStream = await outputFile.OpenWriteAsync(overwrite: true))
