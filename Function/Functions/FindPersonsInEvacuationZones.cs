@@ -41,10 +41,10 @@ namespace EvacAlert.Functions
             }
 
             //should we filter the non-evac'd people out?
-            bool outputAllEvacs = true; //true by default
+            bool outputAllEvacs = false; //false by default
             if (req.Query.TryGetValue("includeAll", out StringValues queryValue))
             {
-                if (bool.TryParse(queryValue.FirstOrDefault() ?? "true", out bool parsedResult))
+                if (bool.TryParse(queryValue.FirstOrDefault() ?? "false", out bool parsedResult))
                 {
                     outputAllEvacs = parsedResult;
                 }
