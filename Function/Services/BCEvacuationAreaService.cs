@@ -32,7 +32,7 @@ namespace EvacAlert.Services
         {
             string[] urlsToTry = new string[]
             {
-                //EvacUrlWMS,
+                EvacUrlWMS,
                 EvacUrlArcGIS
             };
 
