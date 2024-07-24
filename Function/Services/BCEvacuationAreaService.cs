@@ -32,7 +32,7 @@ namespace EvacAlert.Services
         {
             string[] urlsToTry = new string[]
             {
-                EvacUrlWMS,
+                //EvacUrlWMS,
                 EvacUrlArcGIS
             };
 
@@ -99,10 +99,16 @@ namespace EvacAlert.Services
                 {
                     evacArea.DateModified = modifiedDate;
                 }
-                else if (evacFeature.Properties.TryGetValue("DATE_MODIFIED", out object dateModifiedUnixTime) &&
-                        Regex.IsMatch(dateModifiedUnixTime.ToString(), "^0-9+$"))
+                else if (evacFeature.Properties.TryGetValue("DATE_MODIFIED", out object dateModifiedUnixTime))
+                        
                 {
                     //if it's a unix timestamp, then make the change
+                    var stringValue =dateModifiedString.ToString();
+                    if (Int64.TryParse(stringValue, out long epochMilliseconds))
+                    {
+                        DateTime parsedModifiedDate = new DateTime(1970, 1, 1) + TimeSpan.FromMilliseconds(epochMilliseconds);
+                        evacArea.DateModified = parsedModifiedDate;
+                    }
                 }
 
 
